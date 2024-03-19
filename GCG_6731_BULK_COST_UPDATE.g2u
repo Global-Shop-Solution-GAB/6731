@@ -1,0 +1,710 @@
+Program.Sub.ScreenSU.Start
+Gui.F_InvPrice..Create
+Gui.F_InvPrice..Caption("Purcahse Part Bulk Price Update by Vendor Sort")
+Gui.F_InvPrice..Size(15360,10695)
+Gui.F_InvPrice..MinX(0)
+Gui.F_InvPrice..MinY(0)
+Gui.F_InvPrice..Position(0,0)
+Gui.F_InvPrice..BackColor(-2147483633)
+Gui.F_InvPrice..MousePointer(0)
+Gui.F_InvPrice..Event(UnLoad,F_InvPrice_UnLoad)
+Gui.F_InvPrice.GsGridInv.Create(GsGridControl)
+Gui.F_InvPrice.GsGridInv.Size(14955,8970)
+Gui.F_InvPrice.GsGridInv.Position(150,705)
+Gui.F_InvPrice.GsGridInv.Anchor(15)
+Gui.F_InvPrice.GsGridInv.Event(CellValueChanged,GsGridInv_CellValueChanged)
+Gui.F_InvPrice.GsGridInv.Event(RowCellClick,GsGridInv_RowCellClick)
+Gui.F_InvPrice.lblVend.Create(Label,"Vendor Sort",True,1470,255,0,150,120,True,0,"Arial",8,-2147483633,0)
+Gui.F_InvPrice.txtVend.Create(TextBox,"",True,1380,300,0,150,330,True,0,"Arial",8,-2147483643,1)
+Gui.F_InvPrice.txtVend.Event(GotFocus,txtVend_GotFocus)
+Gui.F_InvPrice.txtVend.Event(LostFocus,txtVend_LostFocus)
+Gui.F_InvPrice.cmdVend.Create(Button)
+Gui.F_InvPrice.cmdVend.Size(450,375)
+Gui.F_InvPrice.cmdVend.Position(1680,300)
+Gui.F_InvPrice.cmdVend.Caption("^")
+Gui.F_InvPrice.cmdVend.Event(Click,cmdVend_Click)
+Gui.F_InvPrice.cmdUpdate.Create(Button)
+Gui.F_InvPrice.cmdUpdate.Size(1620,375)
+Gui.F_InvPrice.cmdUpdate.Position(150,9765)
+Gui.F_InvPrice.cmdUpdate.Caption("Update Selected")
+Gui.F_InvPrice.cmdUpdate.Event(Click,cmdUpdate_Click)
+Gui.F_InvPrice.cmdUpdate.Anchor(6)
+Gui.F_InvPrice.cmdExport.Create(Button)
+Gui.F_InvPrice.cmdExport.Size(1125,375)
+Gui.F_InvPrice.cmdExport.Position(13950,300)
+Gui.F_InvPrice.cmdExport.Anchor(9)
+Gui.F_InvPrice.cmdExport.Caption("Export")
+Gui.F_InvPrice.cmdExport.Event(Click,cmdExport_Click)
+Gui.F_InvPrice.lblPerc.Create(Label,"Percentage Increase",True,1815,255,0,2550,105,True,0,"Arial",8,-2147483633,0)
+Gui.F_InvPrice.txtPer.Create(TextBox,"",True,525,300,0,2550,330,True,0,"Arial",8,-2147483643,1)
+Gui.F_InvPrice.txtPer.NumericOnly(1)
+Gui.F_InvPrice.txtPer.Event(GotFocus,txtPer_GotFocus)
+Gui.F_InvPrice.cmdPer.Create(Button)
+Gui.F_InvPrice.cmdPer.Size(1740,375)
+Gui.F_InvPrice.cmdPer.Position(3240,300)
+Gui.F_InvPrice.cmdPer.Caption("Increase Price by %")
+Gui.F_InvPrice.cmdPer.Event(Click,cmdPer_Click)
+Gui.F_InvPrice.lblDol.Create(Label,"Dollar Increase",True,1815,255,0,5280,105,True,0,"Arial",8,-2147483633,0)
+Gui.F_InvPrice.txtDol.Create(TextBox,"",True,900,300,0,5280,330,True,0,"Arial",8,-2147483643,1)
+Gui.F_InvPrice.txtDol.NumericOnly(1)
+Gui.F_InvPrice.txtDol.Event(GotFocus,txtDol_GotFocus)
+Gui.F_InvPrice.cmdDol.Create(Button)
+Gui.F_InvPrice.cmdDol.Size(1740,375)
+Gui.F_InvPrice.cmdDol.Position(6345,300)
+Gui.F_InvPrice.cmdDol.Caption("Increase Price by $")
+Gui.F_InvPrice.cmdDol.Event(Click,cmdDol_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+V.Global.bOpen.Declare(Boolean,False)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.bExists.Declare(Boolean,False)
+V.Local.sPath.Declare(String,"")
+V.Local.sContents.Declare(String,"")
+V.Local.sLock.Declare(String,"")
+V.Local.sMsg.Declare(String,"")
+
+'F.Intrinsic.String.Build("{0}\GCG_6731_LOCK.txt",V.Caller.FilesDir,V.Local.sPath)
+
+'F.Intrinsic.File.Exists(V.Local.sPath,V.Local.bExists)
+
+'F.Intrinsic.Control.If(V.Local.bExists,=,False)
+'	F.Intrinsic.File.String2File(V.Local.sPath,"",0)
+'F.Intrinsic.Control.EndIf
+
+'F.Intrinsic.File.File2String(V.Local.sPath,V.Local.sContents)
+
+'F.Intrinsic.Control.If(V.Local.sContents.Trim,=,"")
+'	F.Intrinsic.String.Build("{0} Date Time: {1}",V.Caller.User,V.Ambient.Now,V.Local.sLock)
+'	F.Intrinsic.File.String2File(V.Local.sPath,V.Local.sLock,0)
+'F.Intrinsic.Control.Else
+'	F.Intrinsic.String.Build("Bulk Cost Update currently locked{0}{1}{0}If Displayed User is not longer in the Screen Delete the following file {2}",V.Ambient.NewLine,V.Local.sContents,V.Local.sPath,V.Local.sMsg)
+'	F.Intrinsic.UI.Msgbox(V.Local.sMsg,"Please wait")
+'	F.Intrinsic.Control.End
+'F.Intrinsic.Control.EndIf
+
+
+F.Intrinsic.Control.CallSub(Get_Data)
+F.Intrinsic.Control.CallSub(Set_Prop)
+	
+Gui.F_InvPrice..Show
+Gui.F_InvPrice..AlwaysOnTop(True)
+Gui.F_InvPrice..AlwaysOnTop(False)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Main.End
+
+Program.Sub.cmdVend_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdVend_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.sRet.Declare(String)
+V.Local.sSql.Declare(String,"")
+V.Local.sTitles.Declare(String,"")
+V.Local.sWidths.Declare(String,"")
+
+F.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+F.Intrinsic.Control.If(V.Global.bOpen,=,False)
+	F.ODBC.Connection!Con.OpenCompanyConnection
+	V.Global.bOpen.Set(True)
+F.Intrinsic.Control.EndIf
+
+V.Local.sSql.Set("Select Vendor, Name_Vendor From V_VENDOR_MASTER Order by Vendor")
+
+V.Local.sTitles.Set("Vendor*!*Name")
+V.Local.sWidths.Set("1800*!*2200")
+
+F.Intrinsic.String.Split(V.Local.sTitles,"*!*",V.Local.sTitles)
+F.Intrinsic.String.Split(V.Local.sWidths,"*!*",V.Local.sWidths)
+
+F.Intrinsic.UI.Browser("Select Vendor","con",V.Local.sSql,V.Local.sTitles,V.Local.sWidths,10200,8700,V.Local.sRet)
+
+F.Intrinsic.Control.If(V.Global.bOpen)
+	F.ODBC.Connection!Con.Close
+	V.Global.bOpen.Set(False)
+F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Control.If(V.Local.sRet,<>,"***CANCEL***")
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.Local.sRet)
+	Gui.F_InvPrice.txtVend.Text(V.Local.sRet(0).Trim)
+	F.Intrinsic.Control.BlockEvents
+	F.Intrinsic.Control.CallSub(Get_Data)
+	F.Intrinsic.Control.UnBlockEvents
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdVend_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdVend_Click.End
+
+Program.Sub.txtVend_GotFocus.Start
+F.Intrinsic.Control.SetErrorHandler("txtVend_GotFocus_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+
+Gui.F_InvPrice.txtVend.SelectAll
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("txtVend_GotFocus_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.txtVend_GotFocus.End
+
+Program.Sub.txtVend_LostFocus.Start
+F.Intrinsic.Control.SetErrorHandler("txtVend_LostFocus_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+
+F.Intrinsic.Control.BlockEvents
+F.Intrinsic.Control.CallSub(Get_Data)
+F.Intrinsic.Control.UnBlockEvents
+	
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("txtVend_LostFocus_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.txtVend_LostFocus.End
+
+Program.Sub.cmdUpdate_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdUpdate_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.sSql.Declare(String,"")
+V.Local.i.Declare(Long,0)
+V.Local.sDChg.Declare(String,"")
+V.Local.sTChg.Declare(String,"")
+V.Local.fCost.Declare(Float,0)
+V.Local.fPrice.Declare(Float,0)
+
+F.Data.DataView.Create("INVCOST","VTEMP",22,"SELECTION = TRUE","")
+
+F.Intrinsic.Control.If(V.Global.bOpen,=,False)
+	F.ODBC.Connection!Con.OpenCompanyConnection
+	V.Global.bOpen.Set(True)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.UI.InvokeWaitDialog("Updating Cost..........")
+F.Data.DataTable.CreateFromSQL("AHist","con","Select Part, Locn, Date_Chg, Time_Chg, Alt_Cost, Program, Hst_User, Price, Cost, Val_Chgd, Filler From Alt_Cost_Hist where Part = '-91kd8i0'",True)
+F.Data.DataTable.DeleteRow("AHist")
+F.Data.DataTable.AcceptChanges("AHist")
+
+F.Intrinsic.Control.For(V.Local.i,0,V.DataView.INVCOST!VTEMP.RowCount--,1)
+	F.Intrinsic.String.Format(V.Ambient.Date,"YYMMDD",V.Local.sDChg)
+	F.Intrinsic.String.Format(v.Ambient.Time,"HHMMSSSS",v.Local.sTChg)
+	F.Intrinsic.String.Build("Update Inventory_Mstr Set Amt_Alt_Cost = {0}, Date_Last_Chg = '{1}', Time_Last_Chg = '{2}', Who_Chg_Last = '{3}' Where Part = '{4}' and Location = '{5}'",V.DataView.INVCOST!VTEMP(V.Local.i).New_Cost!FieldValFloat,V.Local.sDChg,V.Local.sTChg,V.Caller.User.Trim,V.DataView.INVCOST!VTEMP(V.Local.i).Part!FieldValTrim,V.DataView.INVCOST!VTEMP(V.Local.i).Location!FieldValTrim,V.Local.sSql)
+	F.ODBC.Connection!Con.Execute(V.Local.sSql)
+	F.Intrinsic.String.Build("Select Cost From Inventory_Cost Where Part = '{0}' and Locn = '{1}'",V.DataView.INVCOST!VTEMP(V.Local.i).Part!FieldValTrim,V.DataView.INVCOST!VTEMP(V.Local.i).Location!FieldValTrim,V.Local.sSql)
+	F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSql,V.Local.fCost)
+	F.Intrinsic.String.Build("Select Amt_Price From Inventory_Mstr Where Part = '{0}' and Location = '{1}'",V.DataView.INVCOST!VTEMP(V.Local.i).Part!FieldValTrim,V.DataView.INVCOST!VTEMP(V.Local.i).Location!FieldValTrim,V.Local.sSql)
+	F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSql,V.Local.fPrice)
+	F.Intrinsic.String.Format(V.Ambient.Date,"YYYYMMDD",V.Local.sDChg)
+	F.Data.DataTable.AddRow("AHist","Part",V.DataView.INVCOST!VTEMP(V.Local.i).Part!FieldValTrim,"Locn",V.DataView.INVCOST!VTEMP(V.Local.i).Location!FieldValTrim,"Date_Chg",V.Local.sDChg,"Time_Chg",V.Local.sTChg,"Alt_Cost",V.DataView.INVCOST!VTEMP(V.Local.i).New_Cost!FieldValFloat,"Program","GCG_6731","Hst_User",V.Caller.User.Trim,"Price",V.Local.fPrice,"Cost",V.Local.fCost,"Val_Chgd","1")
+	F.Data.DataTable.SaveToDB("AHist","con","Alt_Cost_Hist","Part*!*Locn*!*Date_Chg*!*Time_Chg*!*Hst_User",128)
+	F.Data.DataTable.DeleteRow("AHist")
+	F.Data.DataTable.AcceptChanges("AHist")
+F.Intrinsic.Control.Next(V.Local.i)
+
+F.Data.DataTable.Close("AHist")
+
+F.Data.DataView.Close("INVCOST","VTEMP")
+
+F.Intrinsic.UI.CloseWaitDialog
+
+F.Intrinsic.Control.If(V.Global.bOpen)
+	F.ODBC.Connection!Con.Close
+	V.Global.bOpen.Set(False)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.BlockEvents
+Gui.F_InvPrice.txtVend.Text("")
+Gui.F_InvPrice.txtDol.Text("")
+Gui.F_InvPrice.txtPer.Text("")
+F.Data.DataTable.DeleteRow("INVCOST")
+F.Data.DataTable.AcceptChanges("INVCOST")
+F.Intrinsic.Control.UnBlockEvents
+
+F.Intrinsic.UI.Msgbox("Update Complete")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdUpdate_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdUpdate_Click.End
+
+Program.Sub.F_InvPrice_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("F_InvPrice_UnLoad_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.sPath.Declare(String,"")
+V.Local.bExists.Declare(Boolean,False)
+
+'F.Intrinsic.String.Build("{0}\GCG_6731_LOCK.txt",V.Caller.FilesDir,V.Local.sPath)
+
+'F.Intrinsic.File.Exists(V.Local.sPath,V.Local.bExists)
+
+'F.Intrinsic.Control.If(V.Local.bExists)
+'	F.Intrinsic.File.DeleteFile(V.Local.sPath)
+'F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Global.bOpen)
+	F.ODBC.Connection!Con.Close
+	V.Global.bOpen.Set(False)
+F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("F_InvPrice_UnLoad_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+Program.Sub.F_InvPrice_UnLoad.End
+
+Program.Sub.Get_Data.Start
+F.Intrinsic.Control.SetErrorHandler("Get_Data_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.sSql.Declare(String,"")
+V.Local.sVendor.Declare(String,"")
+
+V.Local.sVendor.Set(V.Screen.F_InvPrice!txtVend.Text)
+
+F.Intrinsic.Control.If(V.Global.bOpen,=,False)
+	F.ODBC.Connection!Con.OpenCompanyConnection
+	V.Global.bOpen.Set(True)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.DataTable.INVCOST.Exists)
+	F.Intrinsic.String.Build("Select Cast(0 as bit) as Selection, rtrim(b.Name_Vendor) as Vendor, rtrim(a.Part) as Part, rtrim(a.Location) as Location, Case When Key_Source = 'P' Then 'Purchase to Stock' When Key_Source = 'J' Then 'Purchase to Job' Else 'Consign to Stock' End as Source, a.Amt_Alt_Cost, cast(0 as Double) as Percent_Adj, Cast(a.Amt_Alt_Cost as Double) as New_Cost From Inventory_Mstr a Join Inventory_Mst2 b on a.Part = b.Part and a.Location = b.Location Where rtrim(b.Name_Vendor) = '{0}' and (a.Key_Source = 'J' or a.Key_Source = 'P' or a.Key_Source = 'C')",V.Local.sVendor,V.Local.sSql)
+	F.Data.DataTable.CreateFromSQL("TEMP","con",V.Local.sSql,True)
+	F.Data.DataTable.DeleteRow("INVCOST")
+	F.Data.DataTable.AcceptChanges("INVCOST")
+	F.Data.DataTable.Merge("TEMP","INVCOST",False,4)
+	F.Data.DataTable.Close("TEMP")
+F.Intrinsic.Control.Else
+	F.Intrinsic.String.Build("Select Cast(0 as bit) as Selection, rtrim(b.Name_Vendor) as Vendor, rtrim(a.Part) as Part, rtrim(a.Location) as Location, Case When Key_Source = 'P' Then 'Purchase to Stock' When Key_Source = 'J' Then 'Purchase to Job' Else 'Consign to Stock' End as Source, a.Amt_Alt_Cost From Inventory_Mstr a Join Inventory_Mst2 b on a.Part = b.Part and a.Location = b.Location Where rtrim(b.Name_Vendor) = '{0}'","-zzzyyyxxx",V.Local.sSql)
+	F.Data.DataTable.CreateFromSQL("INVCOST","con",V.Local.sSql,True)
+	F.Data.DataTable.AddColumn("INVCOST","Percent_Adj",Float)
+	F.Data.DataTable.AddColumn("INVCOST","New_Cost",Float)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Global.bOpen)
+	F.ODBC.Connection!Con.Close
+	V.Global.bOpen.Set(False)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Get_Data_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Get_Data.End
+
+Program.Sub.Set_Prop.Start
+F.Intrinsic.Control.SetErrorHandler("Set_Prop_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+
+Gui.F_InvPrice.GsGridInv.AddGridviewFromDatatable("GCOST","INVCOST")
+Gui.F_InvPrice.GsGridInv.SetGridviewProperty("GCOST","OptionsViewColumnAutoWidth", True)
+Gui.F_InvPrice.GsGridInv.SetGridviewProperty("GCOST","AllowColumnMoving", False)
+Gui.F_InvPrice.GsGridInv.SetGridviewProperty("GCOST","OptionsFindAlwaysVisible", True)
+Gui.F_InvPrice.GsGridInv.SetGridviewProperty("GCOST","OptionsViewShowAutoFilterRow", True)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Selection","Caption"," ")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Selection","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Selection","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Selection","AllowEdit",False)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Selection","ReadOnly",True)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Vendor","Caption","Vendor Sort")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Vendor","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Vendor","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Vendor","HeaderHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Vendor","CellHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Vendor","AllowEdit",False)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Vendor","ReadOnly",True)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Part","Caption","Part")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Part","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Part","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Part","HeaderHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Part","CellHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Part","AllowEdit",False)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Part","ReadOnly",True)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","Caption","Loc")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","Visible",False)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","HeaderHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","CellHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","AllowEdit",False)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Location","ReadOnly",True)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Source","Caption","Source")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Source","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Source","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Source","HeaderHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Source","CellHAlignment","Near")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Source","AllowEdit",False)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Source","ReadOnly",True)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","Caption","Alt Cost")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","DisplayCustomNumeric","#0.000000")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","HeaderHAlignment","Center")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","CellHAlignment","Center")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","AllowEdit",False)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Amt_Alt_Cost","ReadOnly",True)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Percent_Adj","Caption","% Adj")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Percent_Adj","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Percent_Adj","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Percent_Adj","HeaderHAlignment","Center")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Percent_Adj","CellHAlignment","Center")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Percent_Adj","AllowEdit",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","Percent_Adj","ReadOnly",False)
+
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","Caption","Adj Alt Cost")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","HeaderForeColor",v.Color.PRI-GSS-00)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","HeaderFontBold",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","DisplayCustomNumeric","#0.000000")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","HeaderHAlignment","Center")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","CellHAlignment","Center")
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","AllowEdit",True)
+Gui.F_InvPrice.GsGridInv.SetColumnProperty("GCOST","New_Cost","ReadOnly",False)
+
+Gui.F_InvPrice.GsGridInv.MainView("GCOST")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Set_Prop_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.Set_Prop.End
+
+Program.Sub.GsGridInv_CellValueChanged.Start
+F.Intrinsic.Control.SetErrorHandler("GsGridInv_CellValueChanged_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.fCost.Declare(Float,0)
+V.Local.iCol.Declare(Long,0)
+V.Local.fPercent.Declare(Float,0)
+V.Local.fOldCost.Declare(Float,0)
+
+F.Intrinsic.Control.BlockEvents
+
+'addjusting cost based on percent value entered
+F.Intrinsic.Control.If(V.Args.Column.UCase,=,"PERCENT_ADJ")
+	Gui.F_InvPrice.GsGridInv.GetColumnIndexByName("GCOST","Amt_Alt_Cost",V.Local.iCol)
+	Gui.F_InvPrice.GsGridInv.GetCellValue("GCOST",V.Local.iCol,V.Args.RowIndex,V.Local.fOldCost)
+	F.Intrinsic.Math.Mult(V.Args.Value,"0.01",V.Local.fPercent)
+	F.Intrinsic.Math.Mult(V.Local.fOldCost,V.Local.fPercent,V.Local.fCost)
+	F.Intrinsic.Math.Add(V.Local.fOldCost,V.Local.fCost,V.Local.fCost)
+	F.Intrinsic.String.Format(V.Local.fCost,"#0.000000",V.Local.fCost)
+	F.Data.DataTable.SetValue("INVCOST",V.Args.RowIndex,"New_Cost",V.Local.fCost,"SELECTION",True)
+'addjusting percent value when new cost entered
+F.Intrinsic.Control.ElseIf(V.Args.Column.UCase,=,"NEW_COST")
+	Gui.F_InvPrice.GsGridInv.GetColumnIndexByName("GCOST","Amt_Alt_Cost",V.Local.iCol)
+	Gui.F_InvPrice.GsGridInv.GetCellValue("GCOST",V.Local.iCol,V.Args.RowIndex,V.Local.fOldCost)
+	F.Intrinsic.Math.Sub(V.Args.Value,V.Local.fOldCost,V.Local.fCost)
+	F.Intrinsic.Control.If(V.Local.fOldCost,=,0)
+		F.Data.DataTable.SetValue("INVCOST",V.Args.RowIndex,"Percent_Adj",0,"SELECTION",True)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Math.Div(V.Local.fCost,V.Local.fOldCost,V.Local.fPercent)
+		F.Intrinsic.Math.Mult(V.Local.fPercent,100,V.Local.fPercent)
+		F.Data.DataTable.SetValue("INVCOST",V.Args.RowIndex,"Percent_Adj",V.Local.fPercent,"SELECTION",True)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.UnBlockEvents
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("GsGridInv_CellValueChanged_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.GsGridInv_CellValueChanged.End
+
+Program.Sub.GsGridInv_RowCellClick.Start
+F.Intrinsic.Control.SetErrorHandler("GsGridInv_RowCellClick_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+
+'checking/unchecking row
+F.Intrinsic.Control.If(V.Args.Column.UCase,=,"SELECTION")
+	F.Data.DataTable.SetValue("INVCOST",V.Args.RowIndex,"Selection",V.DataTable.INVCOST(V.Args.RowIndex).Selection!FieldValNot)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("GsGridInv_RowCellClick_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.GsGridInv_RowCellClick.End
+
+Program.Sub.cmdExport_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdExport_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.bExcel.Declare(Boolean,False)
+V.Local.bFileLocked.Declare(Boolean,False)
+V.Local.sMsg.Declare(String,"")
+V.Local.sControl.Declare(String,"")
+V.Local.sFileExport.Declare(String,"")
+
+F.Automation.MSExcel.CheckPresence(V.Local.bExcel)
+
+F.Intrinsic.Control.If(V.Local.bExcel)
+	F.Intrinsic.String.Build("{0}\GCG_6731_{1}_Export.xlsx",V.Caller.LocalGssTempDir,V.Local.sControl,V.Local.sFileExport)
+	F.Intrinsic.File.IsFileLocked(V.Local.sFileExport,V.Local.bFileLocked)
+	F.Intrinsic.Control.If(V.Local.bFileLocked)
+		F.Intrinsic.String.Build("File is already open. Please close and export again.{0}File: {1}",V.Ambient.NewLine,V.Local.sFileExport,V.Local.sMsg)
+		F.Intrinsic.UI.Msgbox(V.Local.sMsg,"File In Use")
+	F.Intrinsic.Control.Else
+		Gui.F_InvPrice.GsGridInv.Export(V.Local.sFileExport,"xlsx")
+		F.Intrinsic.Task.ShellExec(0,"",V.Local.sFileExport,"","",1)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Intrinsic.String.Build("{0}\GCG_6731_{1}_Export.csv",V.Caller.LocalGssTempDir,V.Local.sControl,V.Local.sFileExport)
+	F.Intrinsic.File.IsFileLocked(V.Local.sFileExport,V.Local.bFileLocked)
+	F.Intrinsic.Control.If(V.Local.bFileLocked)
+		F.Intrinsic.String.Build("File is already open. Please close and export again.{0}File: {1}",V.Ambient.NewLine,V.Local.sFileExport,V.Local.sMsg)
+		F.Intrinsic.UI.Msgbox(V.Local.sMsg,"File In Use")
+	F.Intrinsic.Control.Else
+		Gui.F_InvPrice.GsGridInv.Export(V.Local.sFileExport,"csv")
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Task.ShellExec(0,"",V.Local.sFileExport,"","",1)
+F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdExport_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdExport_Click.End
+
+Program.Sub.txtPer_GotFocus.Start
+F.Intrinsic.Control.SetErrorHandler("txtPer_GotFocus_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+
+Gui.F_InvPrice.txtPer.SelectAll
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("txtPer_GotFocus_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.txtPer_GotFocus.End
+
+Program.Sub.txtDol_GotFocus.Start
+F.Intrinsic.Control.SetErrorHandler("txtDol_GotFocus_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+
+Gui.F_InvPrice.txtDol.SelectAll
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("txtDol_GotFocus_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.txtDol_GotFocus.End
+
+Program.Sub.cmdPer_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdPer_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.i.Declare(Long,0)
+V.Local.fOldCost.Declare(Float,0)
+V.Local.fPercent.Declare(Float,0)
+V.Local.fCost.Declare(Float,0)
+
+F.Intrinsic.Control.BlockEvents
+
+F.Intrinsic.Control.For(V.Local.i,0,V.DataTable.INVCOST.RowCount--,1)
+	V.Local.fOldCost.Set(V.DataTable.INVCOST(V.Local.i).Amt_Alt_Cost!FieldVal)
+	F.Intrinsic.Control.If(V.Local.fOldCost,>,0)
+		F.Intrinsic.Math.Mult(V.Screen.F_InvPrice!txtPer.Text,"0.01",V.Local.fPercent)
+		F.Intrinsic.Math.Mult(V.Local.fOldCost,V.Local.fPercent,V.Local.fCost)
+		F.Intrinsic.Math.Add(V.Local.fOldCost,V.Local.fCost,V.Local.fCost)
+		F.Intrinsic.String.Format(V.Local.fCost,"#0.000000",V.Local.fCost)
+		F.Data.DataTable.SetValue("INVCOST",V.Local.i,"Percent_Adj",V.Screen.F_InvPrice!txtPer.Text,"New_Cost",V.Local.fCost,"SELECTION",True)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.i)
+
+F.Intrinsic.Control.UnBlockEvents
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdPer_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdPer_Click.End
+
+Program.Sub.cmdDol_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdDol_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String,"")
+V.Local.i.Declare(Long,0)
+V.Local.fOldCost.Declare(Float,0)
+V.Local.fPercent.Declare(Float,0)
+V.Local.fCost.Declare(Float,0)
+V.Local.fNewCost.Declare(Float,0)
+
+F.Intrinsic.Control.BlockEvents
+
+F.Intrinsic.Control.For(V.Local.i,0,V.DataTable.INVCOST.RowCount--,1)
+
+	V.Local.fOldCost.Set(V.DataTable.INVCOST(V.Local.i).Amt_Alt_Cost!FieldVal)
+	F.Intrinsic.Math.Add(V.Local.fOldCost,V.Screen.F_InvPrice!txtDol.Text,V.Local.fNewCost)
+	F.Intrinsic.Math.Sub(V.Local.fNewCost,V.Local.fOldCost,V.Local.fCost)
+	F.Intrinsic.Control.If(V.Local.fOldCost,=,0)
+		F.Data.DataTable.SetValue("INVCOST",V.Local.i,"Percent_Adj",0,"New_Cost",V.Local.fNewCost,"SELECTION",True)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Math.Div(V.Local.fCost,V.Local.fOldCost,V.Local.fPercent)
+		F.Intrinsic.Math.Mult(V.Local.fPercent,100,V.Local.fPercent)
+		F.Data.DataTable.SetValue("INVCOST",V.Local.i,"Percent_Adj",V.Local.fPercent,"New_Cost",V.Local.fNewCost,"SELECTION",True)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.i)
+
+F.Intrinsic.Control.UnBlockEvents	
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdDol_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	F.Intrinsic.String.Build("Project: GCG_6731_Bulk_Cost_Update.g2u {0}{0}Subroutine: {1}{0}Error Occurred {2} with description {3}",V.Ambient.NewLine,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.If(V.Global.bOpen)
+		F.ODBC.Connection!Con.Close
+		V.Global.bOpen.Set(False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.CallSub(F_InvPrice_UnLoad)
+Function.Intrinsic.Control.EndIf
+Program.Sub.cmdDol_Click.End
